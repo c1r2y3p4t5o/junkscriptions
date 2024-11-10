@@ -7,10 +7,10 @@ pending-*
 yarn.lock
 .pending*
 .wallet11.json
-luckyscriptions1.js
-luckyscriptions3.js
-luckyscriptions4.js
-luckyscriptions10.js
+junkscriptions1.js
+junkscriptions3.js
+junkscriptions4.js
+junkscriptions10.js
 .cookie
 bulk-mint.sh
 

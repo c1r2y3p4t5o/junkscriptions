@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 
-const dogecore = require('./bitcore-lib-luckycoin');
+const dogecore = require('bitcore-lib-junkcoin');
 const axios = require('axios')
 const fs = require('fs')
 const dotenv = require('dotenv')
