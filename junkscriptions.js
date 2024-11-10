@@ -429,7 +429,7 @@ function inscribe(wallet, address, contentType, data) {
 
         let p2shOutput = new Transaction.Output({
             script: p2sh,
-            satoshis: 100000
+            satoshis: 1000000
         })
 
         let tx = new Transaction()
@@ -468,7 +468,7 @@ function inscribe(wallet, address, contentType, data) {
 
     let tx = new Transaction()
     tx.addInput(p2shInput)
-    tx.to(address, 100000)
+    tx.to(address, 1000000)
     fund(wallet, tx)
 
     let signature = Transaction.sighash.sign(tx, privateKey, Signature.SIGHASH_ALL, 0, lastLock)
