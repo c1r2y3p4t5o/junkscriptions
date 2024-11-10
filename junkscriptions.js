@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 
 
-const dogecore = require('bitcore-lib-junkcoin');
+const junkcore = require('bitcore-lib-junkcoin');
 const axios = require('axios')
 const fs = require('fs')
 const dotenv = require('dotenv')
 const mime = require('mime-types')
 const express = require('express')
-const { PrivateKey, Address, Transaction, Script, Opcode } = dogecore
-const { Hash, Signature } = dogecore.crypto
+const { PrivateKey, Address, Transaction, Script, Opcode } = junkcore
+const { Hash, Signature } = junkcore.crypto
 
 dotenv.config()
 
 if (process.env.TESTNET == 'true') {
-    dogecore.Networks.defaultNetwork = dogecore.Networks.testnet
+    junkcore.Networks.defaultNetwork = junkcore.Networks.testnet
 }
 
 if (process.env.FEE_PER_KB) {
@@ -41,73 +41,73 @@ async function main() {
        await wallet()
    } else if (cmd == 'server') {
        await server()
-   } else if (cmd == 'lky-20') {
-       await doge20()
+   } else if (cmd == 'jkc-20') {
+       await junk20()
    } else {
        throw new Error(`unknown command: ${cmd}`)
    }
 }
 
-async function doge20() {
+async function junk20() {
   let subcmd = process.argv[3]
 
   if (subcmd === 'mint') {
-    await doge20Transfer("mint")
+    await junk20Transfer("mint")
   } else if (subcmd === 'transfer') {
-    await doge20Transfer("transfer")
+    await junk20Transfer("transfer")
   } else if (subcmd === 'deploy') {
-    await doge20Deploy()
+    await junk20Deploy()
   } else {
     throw new Error(`unknown subcommand: ${subcmd}`)
   }
 }
 
-async function doge20Deploy() {
+async function junk20Deploy() {
   const argAddress = process.argv[4]
   const argTicker = process.argv[5]
   const argMax = process.argv[6]
   const argLimit = process.argv[7]
 
 
- const doge20Tx = {
-   p: "lky-20",
+ const junk20Tx = {
+   p: "jkc-20",
    op: "deploy",
    tick: `${argTicker.toLowerCase()}`,
    max: `${argMax}`,
    lim: `${argLimit}`
  };
 
-  const parsedDoge20Tx = JSON.stringify(doge20Tx);
+  const parsedJunk20Tx = JSON.stringify(junk20Tx);
 
-  // encode the doge20Tx as hex string
-  const encodedDoge20Tx = Buffer.from(parsedDoge20Tx).toString('hex');
+  // encode the junk20Tx as hex string
+  const encodedJunk20Tx = Buffer.from(parsedJunk20Tx).toString('hex');
 
 
- console.log("Deploying lky-20 token...");
- await mint(argAddress, "text/plain;charset=utf-8", encodedDoge20Tx);
+ console.log("Deploying jkc-20 token...");
+ await mint(argAddress, "text/plain;charset=utf-8", encodedJunk20Tx);
 }
 
-async function doge20Transfer(op = "transfer") {
+async function junk20Transfer(op = "transfer") {
   const argAddress = process.argv[4]
   const argTicker = process.argv[5]
   const argAmount = process.argv[6]
   const argRepeat = Number(process.argv[7]) || 1;
 
-  const doge20Tx = {
-    p: "lky-20",
+  const junk20Tx = {
+    p: "jkc-20",
     op: op,
     tick: `${argTicker.toLowerCase()}`,
     amt: `${argAmount}`
   };
 
-  const parsedDoge20Tx = JSON.stringify(doge20Tx);
+  const parsedJunk20Tx = JSON.stringify(junk20Tx);
 
-  // encode the doge20Tx as hex string
-  const encodedDoge20Tx = Buffer.from(parsedDoge20Tx).toString('hex');
+  // encode the junk20Tx as hex string
+  const encodedJunk20Tx = Buffer.from(parsedJunk20Tx).toString('hex');
 
   for (let i = 0; i < argRepeat; i++) {
-    console.log(`${op === "mint" ? "Minting" : "Transferring"} lky-20 token...`, i + 1, "of", argRepeat, "times");
-    await mint(argAddress, "text/plain;charset=utf-8", encodedDoge20Tx);
+    console.log(`${op === "mint" ? "Minting" : "Transferring"} jkc-20 token...`, i + 1, "of", argRepeat, "times");
+    await mint(argAddress, "text/plain;charset=utf-8", encodedJunk20Tx);
   }
 }
 
@@ -147,7 +147,7 @@ function walletNew() {
 async function walletSync() {
     let wallet = JSON.parse(fs.readFileSync(WALLET_PATH))
 
-    console.log('syncing utxos with local Luckycoin node via RPC')
+    console.log('syncing utxos with local Junkcoin node via RPC')
 
     const body = {
         jsonrpc: "1.0",
@@ -194,32 +194,33 @@ function walletBalance() {
 
 
 async function walletSend() {
-    const argAddress = process.argv[4]
-    const argAmount = process.argv[5]
+    const argAddress = process.argv[4];
+    const argAmount = process.argv[5];
 
-    let wallet = JSON.parse(fs.readFileSync(WALLET_PATH))
+    let wallet = JSON.parse(fs.readFileSync(WALLET_PATH));
 
-    let balance = wallet.utxos.reduce((acc, curr) => acc + curr.satoshis, 0)
-    if (balance == 0) throw new Error('no funds to send')
+    let balance = wallet.utxos.reduce((acc, curr) => acc + curr.satoshis, 0);
+    if (balance === 0) throw new Error('no funds to send');
 
-    let receiver = new Address(argAddress)
-    let amount = parseInt(argAmount)
+    let receiver = new Address(argAddress);
+    let amount = parseInt(argAmount);
 
-    let tx = new Transaction()
-    if (amount) {
-        tx.to(receiver, amount)
-        fund(wallet, tx)
-    } else {
-        tx.from(wallet.utxos)
-        tx.change(receiver)
-        tx.sign(wallet.privkey)
+    if (isNaN(amount) || amount <= 0) {
+        throw new Error('Invalid amount specified: must be a positive integer');
     }
 
-    await broadcast(tx, true)
+    if (balance < amount) {
+        throw new Error('Insufficient funds');
+    }
 
-    console.log(tx.hash)
+    let tx = new Transaction();
+    tx.to(receiver, amount);
+    fund(wallet, tx);
+
+    await broadcast(tx, true);
+
+    console.log('Transaction hash:', tx.hash);
 }
-
 
 async function walletSplit() {
     let splits = parseInt(process.argv[4])

@@ -1,6 +1,6 @@
-Luckyscriptions
+Junkscriptions
 
-A minter and protocol for inscriptions on Luckycoin.
+A minter and protocol for inscriptions on Junkcoin.
 
 ## Setup
 
@@ -22,7 +22,7 @@ A minter and protocol for inscriptions on Luckycoin.
 
     node . wallet new
 
-*Then send Luckycoin to the address displayed. Once sent, sync your wallet:*
+*Then send Junkcoin to the address displayed. Once sent, sync your wallet:*
 
     node . wallet sync
 
@@ -62,7 +62,7 @@ A minter and protocol for inscriptions on Luckycoin.
 
 ## Protocol
 
-The Luckyscriptions protocol allows any size data to be inscribed onto subwoofers.
+The Junkscriptions protocol allows any size data to be inscribed onto subwoofers.
 
 **An inscription is defined as a series of push datas:**
 
@@ -111,7 +111,7 @@ The Luckyscriptions protocol allows any size data to be inscribed onto subwoofer
 
 ### I'm getting ECONNREFUSED errors when minting
 
-There's a problem with the node connection. Your `dogecoin.conf` file should look something like:
+There's a problem with the node connection. Your `junkcoin.conf` file should look something like:
 
     rpcuser=ape
     rpcpassword=zord
